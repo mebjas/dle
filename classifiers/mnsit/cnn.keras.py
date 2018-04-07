@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 import json
+from time import time
 
 from keras.models import Sequential
 from keras.layers import Dense
@@ -29,6 +30,8 @@ with open("dataset/d.validation.pkl", "rb") as ifp:
     X_validation, Y_validation = pickle.load(ifp)
 
 
+startTime = time()
+
 # fix random seed for reproducibility
 seed = 7
 np.random.seed(seed)
@@ -49,11 +52,11 @@ def baseline_model():
 	model = Sequential()
 	model.add(Conv2D(30, (5, 5), input_shape=(1, 28, 28), activation='relu'))
 	model.add(MaxPooling2D(pool_size=(2, 2)))
-	model.add(Conv2D(15, (3, 3), activation='relu'))
-	model.add(MaxPooling2D(pool_size=(2, 2)))
+	# model.add(Conv2D(15, (3, 3), activation='relu'))
+	# model.add(MaxPooling2D(pool_size=(2, 2)))
 	model.add(Dropout(0.2))
 	model.add(Flatten())
-	model.add(Dense(128, activation='relu'))
+	# model.add(Dense(128, activation='relu'))
 	model.add(Dense(50, activation='relu'))
 	model.add(Dense(num_classes, activation='softmax'))
     # Compile model
@@ -64,8 +67,11 @@ def baseline_model():
 # build the model
 model = baseline_model()
 # Fit the model
-model.fit(X_train, Y_train, validation_data=(X_test, Y_test), epochs=10, batch_size=200, verbose=2)
+model.fit(X_train, Y_train, validation_data=(X_test, Y_test), epochs=2, batch_size=200, verbose=2)
 # Final evaluation of the model
 scores = model.evaluate(X_test, Y_test, verbose=0)
+timeTaken = time() - startTime
+
 print("CNN Error: %.2f%%" % (100-scores[1]*100))
 print (scores)
+print("Time Taken: %.3f s" % timeTaken)
